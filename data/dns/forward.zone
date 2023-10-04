@@ -1,0 +1,37 @@
+$TTL 300
+@               IN      SOA     bastion.ocp.com.  admin.ocp.com. (
+                                        2019120303   ; Serial
+                                        1450         ; Refresh
+                                        145          ; Retry
+                                        604800       ; Expire
+                                        300          ; TTL
+                                        )
+                        		IN      NS      bastion.ocp.com.
+                        		IN      NS      admin.ocp.com.
+bastion                     		IN      A       10.74.237.182
+admin                       		IN      A       10.74.237.182
+                        		IN      TXT    "v=spf1 -all"
+haproxy.babbar.ocp.com.               	IN      A       10.74.237.182
+bastion.babbar.ocp.com.                	IN      A       10.74.237.182
+bootstrap.babbar.ocp.com.               IN      A       10.74.237.183
+master01.babbar.ocp.com.                IN      A       10.74.237.184
+master02.babbar.ocp.com.                IN      A       10.74.237.185
+master03.babbar.ocp.com.                IN      A       10.74.237.186
+etcd-1.babbar.ocp.com.                  IN      A       10.74.237.184
+etcd-2.babbar.ocp.com.                  IN      A       10.74.237.185
+etcd-3.babbar.ocp.com.                  IN      A       10.74.237.186
+;worker01.babbar.ocp.com.                IN      A       10.74.237.221
+;worker02.babbar.ocp.com.                IN      A       10.74.237.222
+;worker03.babbar.ocp.com.                IN      A       10.74.237.223
+;CNAME Record
+api.babbar.ocp.com.     IN CNAME haproxy.babbar.ocp.com.
+api-int.babbar.ocp.com. IN CNAME haproxy.babbar.ocp.com.
+*.apps.babbar.ocp.com.  IN CNAME haproxy.babbar.ocp.com.
+ ;_service._proto.name.     TTL   class SRV priority weight port target.
+_etcd-server-ssl._tcp.babbar.ocp.com.  86400 IN    SRV 0        10     2380 etcd-1.babbar.ocp.com.
+_etcd-server-ssl._tcp.babbar.ocp.com.  86400 IN    SRV 0        10     2380 etcd-2.babbar.ocp.com.
+_etcd-server-ssl._tcp.babbar.ocp.com.  86400 IN    SRV 0        10     2380 etcd-3.babbar.ocp.com.
+;testing access
+;;; Test2
+;; EOF
+;;;
