@@ -7,7 +7,7 @@ guestinfo.ignition.config.data
 --------------------------------------------------------------
 
 
-guestinfo.ignition.config.dataencoding
+guestinfo.ignition.config.data.encoding
 
 base64
 --------------------------------------------------------------
