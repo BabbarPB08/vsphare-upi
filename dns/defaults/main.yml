@@ -1,0 +1,6 @@
+---
+# Default variables for DNS configuration
+dns_forwarders:
+  - 10.75.5.25
+  - 10.38.5.26
+

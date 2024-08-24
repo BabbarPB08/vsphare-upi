@@ -1,0 +1,74 @@
+---
+- name: Configure DNS, Firewall, SELinux, Networking, and Install Packages
+  hosts: all
+  become: yes
+  tasks:
+    - name: Disable and stop SELinux
+      ansible.builtin.command: setenforce 0
+      when: ansible_selinux.status == "enabled"
+      
+    - name: Disable SELinux in config file
+      ansible.builtin.replace:
+        path: /etc/selinux/config
+        regexp: '^SELINUX=enforcing'
+        replace: 'SELINUX=disabled'
+
+    - name: Stop and disable firewalld
+      ansible.builtin.service:
+        name: firewalld
+        state: stopped
+        enabled: no
+
+    - name: Configure network interface enp192 with a static IP
+      ansible.builtin.copy:
+        dest: /etc/sysconfig/network-scripts/ifcfg-enp192
+        content: |
+          TYPE=Ethernet
+          BOOTPROTO=static
+          NAME=enp192
+          DEVICE=enp192
+          ONBOOT=yes
+          IPADDR=192.168.3.91
+          NETMASK=255.255.255.0
+
+    - name: Restart network interface enp192
+      ansible.builtin.command: nmcli connection reload
+
+    - name: Ensure network interface enp224 is managed by DHCP
+      ansible.builtin.copy:
+        dest: /etc/sysconfig/network-scripts/ifcfg-enp224
+        content: |
+          TYPE=Ethernet
+          BOOTPROTO=dhcp
+          NAME=enp224
+          DEVICE=enp224
+          ONBOOT=yes
+
+    - name: Restart network interface enp224
+      ansible.builtin.command: nmcli connection reload
+
+    - name: Install required packages
+      ansible.builtin.yum:
+        name:
+          - squid
+          - bind
+          - haproxy
+        state: present
+      
+    - name: Set up enp224 as the default route
+      ansible.builtin.command: ip route replace default via {{ ansible_eth1.ipv4.gateway }} dev enp224
+      when: ansible_default_ipv4.gateway is not defined
+      ignore_errors: yes
+
+    - name: Bring up enp192 interface
+      ansible.builtin.command: nmcli con up enp192
+
+    - name: Restart network services
+      ansible.builtin.service:
+        name: network
+        state: restarted
+- name: Configure DNS
+  hosts: all
+  become: yes
+  roles:
+    - dns

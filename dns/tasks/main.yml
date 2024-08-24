@@ -1,0 +1,43 @@
+---
+
+#- name: Delete existing DNS configuration files
+#  ansible.builtin.file:
+#    path: "{{ item }}"
+#    state: absent
+#  with_items:
+#    - /etc/named.conf
+#    - /var/named/forward.zone
+#    - /var/named/reverse.zone
+#  become: yes
+
+
+- name: Configure DNS server with named.conf
+  ansible.builtin.template:
+    src: named.conf.j2
+    dest: /etc/named.conf
+    owner: named
+    group: named
+    mode: '0644'
+
+
+- name: Configure forward zone
+  ansible.builtin.template:
+    src: forward.zone.j2
+    dest: /var/named/forward.zone
+    owner: named
+    group: named
+    mode: '0644'
+
+- name: Configure reverse zone
+  ansible.builtin.template:
+    src: reverse.zone.j2
+    dest: /var/named/reverse.zone
+    owner: named
+    group: named
+    mode: '0644'
+
+- name: Start and enable named service
+  ansible.builtin.service:
+    name: named
+    state: started
+    enabled: yes

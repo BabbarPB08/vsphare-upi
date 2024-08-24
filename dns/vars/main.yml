@@ -1,0 +1,7 @@
+---
+# Variables used in DNS configuration
+dns_listen_addresses:
+  - 127.0.0.1
+  - 10.74.236.228
+  - 192.168.3.91
+
